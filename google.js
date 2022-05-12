@@ -24,39 +24,34 @@ const google =
         })
     },
 
-    index : function()
+    index : function(stream)
     {
-        google.static_file('index.html')
+        google.static_file('index.html',stream)
     },
     
-    local : function(url)
+    local : function(url,stream)
     {
         let ext = path.extname(url)
         if(ext == '.png' || ext == '.ico')
         {
-            google.static_file(path.basename(url))
+            google.static_file(path.basename(url),stream)
         }
         else
         {
-            google.job_done()
+            stream.end()
         }
     },
 
-    static_file : function(path)
+    static_file : function(path,stream)
     {
         fs.readFile(path, (err, data) => {
             if (err) 
             {
                 console.error(err)
             }
-            google.job_done(data)
+            stream.end(data)
         })
     },
-
-    job_done :function (data)
-    {
-        google.EE.emit('job_done',data)
-    }
     
 }
 

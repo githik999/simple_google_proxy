@@ -3,17 +3,13 @@ const google = require('./google')
 
 function onRequest(req,res)
 {
-    google.EE.on('job_done',(body)=>{
-        res.end(body)
-    })
-
     if(req.url == '/')
     {
-        google.index()
+        google.index(res)
     }
     else
     {
-        google.local(req.url)
+        google.local(req.url,res)
     }
 }
 
