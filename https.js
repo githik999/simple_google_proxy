@@ -3,8 +3,8 @@ const https = require('https')
 const google = require('./google')
 
 const options = {
-    key: fs.readFileSync('127.0.0.1.key'),
-    cert: fs.readFileSync('127.0.0.1.cert')
+    key: fs.readFileSync('private.key'),
+    cert: fs.readFileSync('certificate.crt')
 }
 
 https.createServer(options,google.on_request).listen(443)
