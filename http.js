@@ -3,8 +3,6 @@ const google = require('./google')
 
 function onRequest(req,res)
 {
-    console.log(req.url)
-
     google.EE.on('job_done',(body)=>{
         res.end(body)
     })
