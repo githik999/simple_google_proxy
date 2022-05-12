@@ -1,16 +1,47 @@
 const fs = require('fs')
 const path = require('path')
 const https = require('https')
-const EventEmitter = require('events')
-
 
 const google = 
-{
-    EE : new EventEmitter(),
+{   
+    on_request : function(req,res)
+    {
+        let url = req.url
+        if(url.indexOf('url') == 1)
+        {
+            google.fetch(url,res)
+        }
+        else if(url.indexOf('search') == 1)
+        {
+            google.search(url,res)
+        }
+        else if(req.url == '/')
+        {
+            google.index(res)
+        }
+        else
+        {
+            google.local(url,res)
+        }
+    },
+
+    fetch : function(url,stream)
+    {
+        let params = new URLSearchParams(url)
+        let uri = params.get('/url?q')
+        google.https_get(uri,stream)
+    },
+
     search : function(url,stream)
     {
         let params = new URLSearchParams(url)
-        https.get('https://www.google.com/search?q='+params.get('q'),(res)=>{
+        let uri = 'https://www.google.com/search?q='+params.get('q')
+        google.https_get(uri,stream)
+    },
+
+    https_get:function(url,stream)
+    {
+        https.get(url,(res)=>{
             let data = []
             res.on('data',(chunk)=>{
                 data.push(chunk)
