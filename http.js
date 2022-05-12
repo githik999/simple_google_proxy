@@ -3,13 +3,18 @@ const google = require('./google')
 
 function onRequest(req,res)
 {
-    if(req.url == '/')
+    let url = req.url
+    if(url.indexOf('search') == 1)
+    {
+        google.search(url,res)
+    }
+    else if(req.url == '/')
     {
         google.index(res)
     }
     else
     {
-        google.local(req.url,res)
+        google.local(url,res)
     }
 }
 

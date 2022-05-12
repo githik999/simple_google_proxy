@@ -7,16 +7,17 @@ const EventEmitter = require('events')
 const google = 
 {
     EE : new EventEmitter(),
-    search : function()
+    search : function(url,stream)
     {
-        https.get('https://www.google.com/',(res)=>{
+        let params = new URLSearchParams(url)
+        https.get('https://www.google.com/search?q='+params.get('q'),(res)=>{
             let data = []
             res.on('data',(chunk)=>{
                 data.push(chunk)
             })
 
             res.on('end',()=>{
-                google.job_done(Buffer.concat(data))
+                stream.end(Buffer.concat(data))
             })
             
         }).on('error',(err)=>{
