@@ -1,4 +1,9 @@
 const http = require('http')
-const google = require('./google')
+const google = require('./google.js')
 
-http.createServer(google.on_request).listen(80)
+function onRequest(req,res)
+{
+    new google(req.url,res)
+}
+
+http.createServer(onRequest).listen(80)

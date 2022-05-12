@@ -1,90 +1,60 @@
 const fs = require('fs')
 const path = require('path')
+const http = require('http')
 const https = require('https')
 
-const google = 
-{   
-    on_request : function(req,res)
+class google
+{
+    constructor(url, stream) 
     {
-        let url = req.url
-        if(url.indexOf('url') == 1)
+        this.url = url
+        this.stream = stream
+        this.run()
+    }
+
+    run()
+    {
+        if(this.url.indexOf('url') == 1)
         {
-            google.fetch(url,res)
+            //google.fetch(url,res)
         }
-        else if(url.indexOf('search') == 1)
+        else if(this.url.indexOf('search') == 1)
         {
-            google.search(url,res)
+            //google.search(url,res)
         }
-        else if(req.url == '/')
+        else if(this.url == '/')
         {
-            google.index(res)
+            this.static_file('index.html')
         }
         else
         {
-            google.local(url,res)
+            this.local()
         }
-    },
+    }
 
-    fetch : function(url,stream)
+    local()
     {
-        let params = new URLSearchParams(url)
-        let uri = params.get('/url?q')
-        google.https_get(uri,stream)
-    },
-
-    search : function(url,stream)
-    {
-        let params = new URLSearchParams(url)
-        let uri = 'https://www.google.com/search?q='+params.get('q')
-        google.https_get(uri,stream)
-    },
-
-    https_get:function(url,stream)
-    {
-        https.get(url,(res)=>{
-            let data = []
-            res.on('data',(chunk)=>{
-                data.push(chunk)
-            })
-
-            res.on('end',()=>{
-                stream.end(Buffer.concat(data))
-            })
-            
-        }).on('error',(err)=>{
-            console.log(err)
-        })
-    },
-
-    index : function(stream)
-    {
-        google.static_file('index.html',stream)
-    },
-    
-    local : function(url,stream)
-    {
-        let ext = path.extname(url)
+        let ext = path.extname(this.url)
         if(ext == '.png' || ext == '.ico')
         {
-            google.static_file(path.basename(url),stream)
+            this.static_file(path.basename(this.url))
         }
         else
         {
-            stream.end()
+            this.stream.end()
         }
-    },
+    }
 
-    static_file : function(path,stream)
+    static_file(path)
     {
         fs.readFile(path, (err, data) => {
             if (err) 
             {
                 console.error(err)
             }
-            stream.end(data)
+            this.stream.end(data)
         })
-    },
-    
+    }
 }
 
 module.exports = google
