@@ -14,13 +14,10 @@ class google
 
     run()
     {
-        if(this.url.indexOf('url') == 1)
+        let url = this.decode_params()
+        if(url)
         {
-            //google.fetch(url,res)
-        }
-        else if(this.url.indexOf('search') == 1)
-        {
-            //google.search(url,res)
+            this.crawl(url)
         }
         else if(this.url == '/')
         {
@@ -29,6 +26,20 @@ class google
         else
         {
             this.local()
+        }
+    }
+
+    decode_params()
+    {
+        let data = {'url':['/url?q',''],'search':['q','https://www.google.com/search?q=']}
+        for (const word in data) 
+        {
+            if(this.url.indexOf(word) == 1)
+            {
+                let params = new URLSearchParams(this.url)
+                let ret = data[word][1] + params.get(data[word][0])
+                return ret
+            }
         }
     }
 
@@ -53,6 +64,35 @@ class google
                 console.error(err)
             }
             this.stream.end(data)
+        })
+    }
+
+    crawl(url)
+    {
+        let spider
+        let stream = this.stream
+        if(url.indexOf('https://') == 0)
+        {
+            spider = https.get(url)
+        }
+        else if(url.indexOf('http://') == 0)
+        {
+            spider = http.get(url)
+        }
+
+        spider.on('response',(res)=>{
+            let data = []
+            res.on('data',(chunk)=>{
+                data.push(chunk)
+            })
+    
+            res.on('end',()=>{
+                stream.end(Buffer.concat(data))
+            })
+        })
+
+        spider.on('error',(err)=>{
+            console.log(err)
         })
     }
 }

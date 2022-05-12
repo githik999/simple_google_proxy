@@ -1,9 +1,6 @@
 const http = require('http')
 const google = require('./google.js')
 
-function onRequest(req,res)
-{
+http.createServer((req,res)=>{
     new google(req.url,res)
-}
-
-http.createServer(onRequest).listen(80)
+}).listen(80)
