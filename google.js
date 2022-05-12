@@ -24,22 +24,27 @@ const google =
         })
     },
 
+    index : function()
+    {
+        google.static_file('index.html')
+    },
+    
     local : function(url)
     {
         let ext = path.extname(url)
-        if(ext == '.png')
+        if(ext == '.png' || ext == '.ico')
         {
-            google.local_image(path.basename(url))
+            google.static_file(path.basename(url))
         }
         else
         {
-            google.job_done('xx')
+            google.job_done()
         }
     },
 
-    local_image : function(img)
+    static_file : function(path)
     {
-        fs.readFile(img, (err, data) => {
+        fs.readFile(path, (err, data) => {
             if (err) 
             {
                 console.error(err)

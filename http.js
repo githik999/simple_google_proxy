@@ -11,7 +11,7 @@ function onRequest(req,res)
 
     if(req.url == '/')
     {
-        google.search()
+        google.index()
     }
     else
     {
