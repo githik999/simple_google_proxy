@@ -31,7 +31,7 @@ class google
         }
         else if(this.url == '/' || this.url.indexOf('?sa=X') == 1)
         {
-            this.static_file('index.html')
+            this.static_file('res/google.html')
         }
         else
         {
@@ -70,7 +70,7 @@ class google
         let ext = path.extname(this.url)
         if(ext == '.png' || ext == '.ico')
         {
-            this.static_file(path.basename(this.url))
+            this.static_file('res/'+path.basename(this.url))
         }
         else
         {
@@ -95,21 +95,27 @@ class google
         let stream = this.stream
         if(url.indexOf('https://') == 0)
         {
-            spider = https.get(url)
+            spider = https.request(url)
         }
         else if(url.indexOf('http://') == 0)
         {
-            spider = http.get(url)
+            spider = http.request(url)
         }
+        spider.setHeader('User-Agent','Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36')
+        spider.end()
 
         spider.on('response',(res)=>{
+            console.log(res.statusCode,res.statusMessage)
             let data = []
             res.on('data',(chunk)=>{
                 data.push(chunk)
             })
     
             res.on('end',()=>{
-                stream.end(Buffer.concat(data))
+                let html = Buffer.concat(data).toString()
+                fs.writeFileSync('gg.html',html)
+                stream.setHeader('Content-Type', 'text/html;charset=utf-8')
+                stream.end(html)
             })
         })
 

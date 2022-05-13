@@ -7,12 +7,12 @@ const china =
     site : [],
     init:function()
     {
-        fs.readFile('chn_ip_number_format.txt', (err, data) => {
+        fs.readFile('res/chn_ip_number_format.txt', (err, data) => {
             if (err) throw err
             this.init_bucket(data)
         })
 
-        fs.readFile('china_site.txt', (err, data) => {
+        fs.readFile('res/china_site.txt', (err, data) => {
             if (err) throw err
             this.init_site(data)
         })
