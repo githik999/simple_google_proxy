@@ -55,14 +55,23 @@ const china =
         china.bucket[key].push(data)
     },
 
-    check_host_name : function(str)
+    check_host_name : function(domain)
     {
-        let tail = str.slice(-3)
+        let tail = domain.slice(-3)
         if(tail == '.cn')
         {
             return true
         }
-        console.log(str,tail)
+        let head = domain.slice(0,4)
+        if(head == 'www.')
+        {
+            domain = domain.slice(4)
+        }
+        if(china.site[domain])
+        {
+            return true
+        }
+        //console.log(domain,tail)
     },
 
     check : function(ip)
