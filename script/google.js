@@ -20,7 +20,6 @@ class google
         {
             let params = new URLSearchParams(this.url)
             let url = params.get('/url?q')
-            
             this.judge(url)
         }
         else if(this.url.indexOf('search') == 1)
@@ -55,6 +54,7 @@ class google
                 if(inside)
                 {
                     this.no_need_proxy(url)
+                    china.add_site(obj.hostname)
                 }
                 else
                 {
@@ -101,19 +101,17 @@ class google
         {
             spider = http.request(url)
         }
-        spider.setHeader('User-Agent','Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36')
+        spider.setHeader('User-Agent','Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Gecko/20100101 Firefox/100.0')
         spider.end()
 
         spider.on('response',(res)=>{
-            console.log(res.statusCode,res.statusMessage)
             let data = []
             res.on('data',(chunk)=>{
                 data.push(chunk)
             })
     
             res.on('end',()=>{
-                let html = Buffer.concat(data).toString()
-                fs.writeFileSync('gg.html',html)
+                let html = Buffer.concat(data).toString().replace(/href="http/g, 'href="/url?q=http')
                 stream.setHeader('Content-Type', 'text/html;charset=utf-8')
                 stream.end(html)
             })

@@ -1,5 +1,7 @@
 const fs = require('fs')
 const iptn = require('./ipv4_to_number')
+let ip_file = 'res/chn_ip_number_format.txt'
+let site_file = 'res/china_site.txt'
 
 const china = 
 {
@@ -7,12 +9,12 @@ const china =
     site : [],
     init:function()
     {
-        fs.readFile('res/chn_ip_number_format.txt', (err, data) => {
+        fs.readFile(ip_file, (err, data) => {
             if (err) throw err
             this.init_bucket(data)
         })
 
-        fs.readFile('res/china_site.txt', (err, data) => {
+        fs.readFile(site_file, (err, data) => {
             if (err) throw err
             this.init_site(data)
         })
@@ -49,6 +51,13 @@ const china =
         }
     },
 
+    add_site : function(domain)
+    {
+        fs.appendFile(site_file,'\n'+domain,(err)=>{
+            if(err) throw err
+        })
+    },
+
     insert : function(key,data)
     {
         if(!china.bucket[key]){china.bucket[key] = []}
@@ -71,7 +80,7 @@ const china =
         {
             return true
         }
-        //console.log(domain,tail)
+        //console.log(domain,head,tail,china.site,china.site[domain])
     },
 
     check : function(ip)

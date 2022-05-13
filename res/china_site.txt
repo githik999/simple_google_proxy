@@ -2,3 +2,5 @@ qq.com
 news.qq.com
 zhihu.com
 developer.mozilla.org
+hostloc.com
+blog.csdn.net
