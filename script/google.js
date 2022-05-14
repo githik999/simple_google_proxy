@@ -13,6 +13,7 @@ class google
         this.stream = stream
         this.referer = referer
         this.client_req_url = client_req_url
+        this.open_new_tab = false
         this.run()
     }
 
@@ -73,6 +74,7 @@ class google
                 }
                 else
                 {
+                    this.open_new_tab = url
                     this.crawl(url)
                 }
             })
@@ -122,11 +124,17 @@ class google
                 if(this.client_req_url.startsWith('/url'))
                 {
                     stream.setHeader('Content-Type', 'text/html; charset=utf-8')
+                    if(this.open_new_tab)
+                    {
+                        let script = '<script>window.open("'+this.open_new_tab+'")</script>'
+                        ret = ret.toString().replace('</body></html>',script+'</body></html>')
+                    }
                 }
                 if(url.endsWith('.css'))
                 {
                     xurl.reg_css(path.basename(url),this.referer)
                 }
+                
                 stream.end(ret)
             })
         })
