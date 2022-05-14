@@ -123,6 +123,10 @@ class google
                 {
                     stream.setHeader('Content-Type', 'text/html; charset=utf-8')
                 }
+                if(url.endsWith('.css'))
+                {
+                    xurl.reg_css(path.basename(url),this.referer)
+                }
                 stream.end(ret)
             })
         })
