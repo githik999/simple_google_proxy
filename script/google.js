@@ -119,6 +119,10 @@ class google
                 {
                     ret = ret.toString().replace(/href="http/g, 'href="/url?q=http')
                 }
+                if(this.client_req_url.startsWith('/url'))
+                {
+                    stream.setHeader('Content-Type', 'text/html; charset=utf-8')
+                }
                 stream.end(ret)
             })
         })
