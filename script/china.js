@@ -47,13 +47,14 @@ const china =
         let vec = content.toString().split('\n')
         for (const domain of vec)
         {
-            china.site[domain] = true
+            china.site[domain.trim()] = true
         }
     },
 
     add_site : function(domain)
     {
-        fs.appendFile(site_file,'\n'+domain,(err)=>{
+        let str = '\n'+this.cut_off_head(domain)
+        fs.appendFile(site_file,str,(err)=>{
             if(err) throw err
         })
     },
@@ -66,21 +67,29 @@ const china =
 
     check_host_name : function(domain)
     {
-        let tail = domain.slice(-3)
-        if(tail == '.cn')
+        if(domain.endsWith('.cn'))
         {
             return true
         }
-        let head = domain.slice(0,4)
-        if(head == 'www.')
-        {
-            domain = domain.slice(4)
-        }
+        domain = this.cut_off_head(domain)
         if(china.site[domain])
         {
             return true
         }
         //console.log(domain,head,tail,china.site,china.site[domain])
+    },
+
+    cut_off_head : function(domain)
+    {
+        let vec = ['www.','m.','bbs.','blog.','news.','new.']
+        for (const str of vec) 
+        {
+            if(domain.startsWith(str))
+            {
+                domain = domain.slice(str.length)
+            }
+        }
+        return domain
     },
 
     check : function(ip)

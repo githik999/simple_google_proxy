@@ -4,37 +4,52 @@ const path = require('path')
 const http = require('http')
 const https = require('https')
 const china = require('./china')
+const xurl = require('./xurl')
 
 class google
 {
-    constructor(url, stream) 
+    constructor(client_req_url, referer , stream)
     {
-        this.url = url
         this.stream = stream
+        this.referer = referer
+        this.client_req_url = client_req_url
         this.run()
     }
 
     run()
     {
-        if(this.url.indexOf('url') == 1)
+        if(this.client_req_url.startsWith('/url'))
         {
-            let params = new URLSearchParams(this.url)
-            let url = params.get('/url?q')
-            this.judge(url)
+            this.judge(xurl.find_proxy_target(this.client_req_url))
         }
-        else if(this.url.indexOf('search') == 1)
+        else if(this.client_req_url.startsWith('/search'))
         {
-            let params = new URLSearchParams(this.url.slice(7))
-            let url = 'https://www.google.com/search?q='+params.get('q')+'&start='+params.get('start')
+            let url = xurl.get_search_link(this.client_req_url)
             this.crawl(url)
         }
-        else if(this.url == '/' || this.url.indexOf('?sa=X') == 1)
+        else if(this.client_req_url == '/')
         {
-            this.static_file('res/google.html')
+            this.local_resource('google.html')
+        }
+        else if(this.client_req_url.endsWith('.ico'))
+        {
+            this.local_resource('favicon.ico')
+        }
+        else if(xurl.is_static_resource(this.client_req_url))
+        {
+            let url = xurl.get_static_resource_link(this.client_req_url,this.referer)
+            if(url.startsWith('http'))
+            {
+                this.crawl(url)
+            }
+            else
+            {
+                this.local_resource(path.basename(this.client_req_url))
+            }
         }
         else
         {
-            this.local()
+            this.stream.end()
         }
     }
 
@@ -65,22 +80,9 @@ class google
         
     }
 
-    local()
+    local_resource(path)
     {
-        let ext = path.extname(this.url)
-        if(ext == '.png' || ext == '.ico')
-        {
-            this.static_file('res/'+path.basename(this.url))
-        }
-        else
-        {
-            this.stream.end()
-        }
-    }
-
-    static_file(path)
-    {
-        fs.readFile(path, (err, data) => {
+        fs.readFile('res/'+path, (err, data) => {
             if (err) 
             {
                 console.error(err)
@@ -93,11 +95,12 @@ class google
     {
         let spider
         let stream = this.stream
-        if(url.indexOf('https://') == 0)
+        console.log('crawl',url)
+        if(url.startsWith('https://'))
         {
             spider = https.request(url)
         }
-        else if(url.indexOf('http://') == 0)
+        else if(url.startsWith('http://'))
         {
             spider = http.request(url)
         }
@@ -105,15 +108,18 @@ class google
         spider.end()
 
         spider.on('response',(res)=>{
-            let data = []
+            let all_chunk = []
             res.on('data',(chunk)=>{
-                data.push(chunk)
+                all_chunk.push(chunk)
             })
     
             res.on('end',()=>{
-                let html = Buffer.concat(data).toString().replace(/href="http/g, 'href="/url?q=http')
-                stream.setHeader('Content-Type', 'text/html;charset=utf-8')
-                stream.end(html)
+                let ret = Buffer.concat(all_chunk)
+                if(this.client_req_url.startsWith('/search'))
+                {
+                    ret = ret.toString().replace(/href="http/g, 'href="/url?q=http')
+                }
+                stream.end(ret)
             })
         })
 
@@ -124,8 +130,9 @@ class google
 
     no_need_proxy(url)
     {
+        let uri = encodeURI(url)
         this.stream.statusCode = 301
-        this.stream.setHeader("Location", url)
+        this.stream.setHeader("Location",uri)
         this.stream.end()
     }
 }

@@ -21,5 +21,5 @@ const options = {
 china.init()
 
 https.createServer(options,(req,res)=>{
-    new google(req.url,res)
+    new google(req.url,req.headers.referer,res)
 }).listen(443)
