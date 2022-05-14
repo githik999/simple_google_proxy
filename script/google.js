@@ -127,7 +127,7 @@ class google
                     if(this.open_new_tab)
                     {
                         let script = '<script>window.open("'+this.open_new_tab+'")</script>'
-                        ret = ret.toString().replace('</body></html>',script+'</body></html>')
+                        ret = ret.toString().replace('</body>',script+'</body>')
                     }
                 }
                 if(url.endsWith('.css'))
