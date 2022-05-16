@@ -172,8 +172,8 @@ class google
         if(status == DOMAIN.UNKNOWN)
         {
             this.open_new_tab = true
-            this.actual_target = url
         }
+        this.actual_target = url
         this.crawl(url)
     }
 
