@@ -187,7 +187,7 @@ class google
                 let script = '<script>window.open("'+this.actual_target+'")</script>'
                 str = str.replace('</body>',script+'</body>')
             }
-            fs.writeFile(site,str,(err)=>{
+            fs.writeFile('tmp.html',str,(err)=>{
                 if(err){console.log(err.message)}
             })
         }
