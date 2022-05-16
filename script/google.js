@@ -72,6 +72,11 @@ class google
         else if(domain_status == DOMAIN.UNKNOWN)
         {
             console.log(obj.hostname,'unknown')
+            this.no_proxy(url)
+        }
+        else if(domain_status == DOMAIN.UNKNOWN)
+        {
+            console.log(obj.hostname,'unknown')
             dns.lookup(obj.hostname,(err,ip,family)=>{
                 let ip_status = wall.check_ip(ip)
                 if(ip_status == DOMAIN.UNBLOCK)
