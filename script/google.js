@@ -126,8 +126,10 @@ class google
                     stream.setHeader('Content-Type', 'text/html; charset=utf-8')
                     if(this.open_new_tab)
                     {
+                        let website = xurl.get_website_index(this.open_new_tab)+'/'
                         let script = '<script>window.open("'+this.open_new_tab+'")</script>'
-                        ret = ret.toString().replace('</body>',script+'</body>')
+                        ret = ret.toString().replace(/href="\//g,'href="'+website).replace(/href='\//g,'href="'+website)
+                        ret = ret.replace('</body>',script+'</body>')
                     }
                 }
                 if(url.endsWith('.css'))

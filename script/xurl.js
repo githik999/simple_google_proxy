@@ -23,9 +23,14 @@ const xurl =
     {
         let target = this.find_proxy_target(ref)
         if(!target){return path}
-        let obj = new URL(target)
-        let ret = obj.protocol+'//'+obj.hostname+path
+        let ret = this.get_website_index(target)+path
         return ret
+    },
+
+    get_website_index(url)
+    {
+        let obj = new URL(url)
+        return obj.protocol+'//'+obj.hostname
     },
 
     is_static_resource(str)
