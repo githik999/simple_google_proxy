@@ -29,6 +29,12 @@ const xurl =
         return obj.protocol+'//'+obj.hostname
     },
 
+    get_website_host(url)
+    {
+        let obj = new URL(url)
+        return obj.hostname
+    },
+
     is_static_resource(str)
     {
         let vec = ['.png','.ico','.gif','.jpg','.jpeg','.css']

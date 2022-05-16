@@ -179,6 +179,8 @@ class google
             let site = xurl.get_website_index(this.actual_target)
             let url = '/url?q='+site+'/'
             str = str.replace(/href="\//g,'href="'+url).replace(/href='\//g,'href="'+url).replace(/<img src="\//g,'<img src="'+url)
+            let your_server = xurl.get_website_host(this.referer)
+            str = str.replace(/google-analytics.com/g,your_server+'/url?q=google-analytics.com')
             if(this.open_new_tab)
             {
                 let script = '<script>window.open("'+this.actual_target+'")</script>'
