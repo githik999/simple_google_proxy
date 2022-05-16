@@ -113,7 +113,6 @@ class google
     crawl(url)
     {
         let spider
-        let stream = this.stream
         console.log('crawl',url)
         if(url.startsWith('https://'))
         {
@@ -128,6 +127,7 @@ class google
         spider.end()
 
         spider.on('response',(res)=>{
+            let ext = res.headers['content-type']
             let all_chunk = []
             res.on('data',(chunk)=>{
                 all_chunk.push(chunk)
@@ -135,30 +135,14 @@ class google
     
             res.on('end',()=>{
                 let ret = Buffer.concat(all_chunk)
-                if(this.client_req_url.startsWith('/search'))
+                if(ext.includes('html'))
                 {
-                    ret = ret.toString().replace(/href="http/g, 'href="/url?q=http')
+                    this.send_html(ret.toString())
                 }
-                if(this.client_req_url.startsWith('/url'))
+                else
                 {
-                    stream.setHeader('Content-Type', 'text/html; charset=utf-8')
-                    let site = xurl.get_website_index(this.actual_target)
-                    let url = '/url?q='+site+'/'
-                    ret = ret.toString().replace(/href="\//g,'href="'+url)
-                                        .replace(/href='\//g,'href="'+url)
-                                        .replace(/<img src="\//g,'<img src="'+url)
-                    if(this.open_new_tab)
-                    {
-                        let script = '<script>window.open("'+this.actual_target+'")</script>'
-                        ret = ret.replace('</body>',script+'</body>')
-                    }
+                    this.stream.end(ret)
                 }
-                if(url.endsWith('.css'))
-                {
-                    xurl.reg_css(path.basename(url),this.referer)
-                }
-                
-                stream.end(ret)
             })
         })
 
@@ -183,6 +167,27 @@ class google
         this.stream.statusCode = 301
         this.stream.setHeader("Location",uri)
         this.stream.end()
+    }
+
+    send_html(str)
+    {
+        this.stream.setHeader('Content-Type', 'text/html; charset=utf-8')
+        if(this.client_req_url.startsWith('/search'))
+        {
+            str = str.replace(/href="http/g, 'href="/url?q=http')
+        }
+        else if(this.client_req_url.startsWith('/url'))
+        {
+            let site = xurl.get_website_index(this.actual_target)
+            let url = '/url?q='+site+'/'
+            str = str.replace(/href="\//g,'href="'+url).replace(/href='\//g,'href="'+url).replace(/<img src="\//g,'<img src="'+url)
+            if(this.open_new_tab)
+            {
+                let script = '<script>window.open("'+this.actual_target+'")</script>'
+                str = str.replace('</body>',script+'</body>')
+            }
+        }
+        this.stream.end(str)
     }
 }
 

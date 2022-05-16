@@ -5,10 +5,6 @@ const xurl =
     css_ref : [],
     find_proxy_target(url)
     {
-        if(url.endsWith('.css'))
-        {
-            url = xurl.find_ref(path.basename(url))
-        }
         let params = new URLSearchParams(url)
         for (const [name, value] of params) 
         {
