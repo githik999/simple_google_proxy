@@ -186,6 +186,10 @@ class google
             }
             str = str.replace(/http:\/\//g, '/url?q=http://').replace(/https:\/\//g, '/url?q=https://').replace(/\/url\?q=\/url\?q/g, '/url?q')
         }
+        if(this.client_req_url.startsWith('/search'))
+        {
+            str = str.replace(/href="http/g, 'href="/url?q=http')
+        }
 
         fs.writeFile('tmp.html',str,(err)=>{
             if(err){console.log(err.message)}
