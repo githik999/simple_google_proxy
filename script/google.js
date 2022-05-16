@@ -3,7 +3,7 @@ const dns = require('dns')
 const path = require('path')
 const http = require('http')
 const https = require('https')
-const china = require('./china')
+const wall = require('./wall')
 const xurl = require('./xurl')
 
 class google
@@ -57,25 +57,28 @@ class google
     judge(url)
     {
         let obj = new URL(url)
-        let inside = china.check_host_name(obj.hostname)
-        if(inside)
+        let status = wall.check_host_name(obj.hostname)
+        if(status == 0)
         {
-            this.no_need_proxy(url)
+            this.proxy(url)
+        }
+        else if(status == 1)
+        {
+            this.no_proxy(url)
         }
         else
         {
             dns.lookup(obj.hostname,(err,ip,family)=>{
-                let inside = china.check(ip)
+                let inside = wall.check(ip)
                 console.log(obj.hostname,ip,inside)
                 if(inside)
                 {
-                    this.no_need_proxy(url)
-                    china.add_site(obj.hostname)
+                    this.no_proxy(url)
+                    wall.add_site(obj.hostname)
                 }
                 else
                 {
-                    this.open_new_tab = url
-                    this.crawl(url)
+                    this.proxy(url)
                 }
             })
         }
@@ -146,7 +149,13 @@ class google
         })
     }
 
-    no_need_proxy(url)
+    proxy(url)
+    {
+        this.open_new_tab = url
+        this.crawl(url)
+    }
+
+    no_proxy(url)
     {
         let uri = encodeURI(url)
         this.stream.statusCode = 301

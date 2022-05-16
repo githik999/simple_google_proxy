@@ -1,7 +1,7 @@
 const os = require('os')
 const fs = require('fs')
 const https = require('https')
-const china = require('./script/china')
+const wall = require('./script/wall')
 const google = require('./script/google')
 
 var https_key = 'private.key'
@@ -18,7 +18,7 @@ const options = {
     cert: fs.readFileSync('res/'+https_cert)
 }
 
-china.init()
+wall.init()
 
 https.createServer(options,(req,res)=>{
     new google(req.url,req.headers.referer,res)
