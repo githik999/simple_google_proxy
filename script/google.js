@@ -179,15 +179,13 @@ class google
             let site = xurl.get_website_index(this.actual_target)
             let url = '/url?q='+site+'/'
             str = str.replace(/href="\//g,'href="'+url).replace(/href='\//g,'href="'+url).replace(/<img src="\//g,'<img src="'+url)
-            let your_server = xurl.get_website_host(this.referer)
-            str = str.replace(/google-analytics.com/g,your_server+'/url?q=google-analytics.com')
             if(this.open_new_tab)
             {
                 let script = '<script>window.open("'+this.actual_target+'")</script>'
                 str = str.replace('</body>',script+'</body>')
             }
         }
-        str = str.replace(/href="http/g, 'href="/url?q=http')
+        str = str.replace(/http:\/\//g, '/url?q=http://').replace(/https:\/\//g, '/url?q=https://')
 
         fs.writeFile('tmp.html',str,(err)=>{
             if(err){console.log(err.message)}
