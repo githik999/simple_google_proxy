@@ -5,13 +5,10 @@ const xurl =
     css_ref : [],
     find_proxy_target(url)
     {
-        let params = new URLSearchParams(url)
-        for (const [name, value] of params) 
-        {
-            if(value.startsWith('http') && !value.endsWith('url?q'))
-            {
-                return value
-            }
+        let pos = url.indexOf('url?q=')
+        if(pos > 0)
+        {   
+            return url.slice(pos+6)
         }
     },
 
