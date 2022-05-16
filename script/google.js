@@ -184,8 +184,8 @@ class google
                 let script = '<script>window.open("'+this.actual_target+'")</script>'
                 str = str.replace('</body>',script+'</body>')
             }
+            str = str.replace(/http:\/\//g, '/url?q=http://').replace(/https:\/\//g, '/url?q=https://').replace(/\/url\?q=\/url\?q/g, '/url?q')
         }
-        str = str.replace(/http:\/\//g, '/url?q=http://').replace(/https:\/\//g, '/url?q=https://').replace(/\/url\?q=\/url\?q/g, '/url?q')
 
         fs.writeFile('tmp.html',str,(err)=>{
             if(err){console.log(err.message)}
