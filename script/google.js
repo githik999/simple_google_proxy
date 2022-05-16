@@ -9,19 +9,24 @@ const DOMAIN = require('./domain_block_status')
 
 class google
 {
-    constructor(client_req_url, referer , stream)
+    constructor(client_req_url, referer , stream, tick)
     {
+        this.tick = tick
         this.stream = stream
         this.referer = referer
         this.client_req_url = client_req_url
         this.open_new_tab = false
-        console.log(this.client_req_url,this.referer)
+        console.log(tick,this.client_req_url,this.referer)
         this.run()
     }
 
     run()
     {
-        if(this.client_req_url.startsWith('/url'))
+        if(this.client_req_url == '/' || this.client_req_url.includes('www.google.com'))
+        {
+            this.local_resource('google.html')
+        }
+        else if(this.client_req_url.startsWith('/url'))
         {
             this.judge(xurl.find_proxy_target(this.client_req_url))
         }
@@ -29,10 +34,6 @@ class google
         {
             let url = xurl.get_search_link(this.client_req_url)
             this.crawl(url)
-        }
-        else if(this.client_req_url == '/')
-        {
-            this.local_resource('google.html')
         }
         else if(this.client_req_url.endsWith('.ico'))
         {
@@ -184,14 +185,14 @@ class google
                 let script = '<script>window.open("'+this.actual_target+'")</script>'
                 str = str.replace('</body>',script+'</body>')
             }
-            str = str.replace(/http:\/\//g, '/url?q=http://').replace(/https:\/\//g, '/url?q=https://').replace(/\/url\?q=\/url\?q/g, '/url?q')
+            str = str.replace(/https:\/\//g, '/url?q=https://').replace(/http:\/\//g, '/url?q=http://').replace(/\/url\?q=\/url\?q/g, '/url?q')
         }
         if(this.client_req_url.startsWith('/search'))
         {
             str = str.replace(/href="http/g, 'href="/url?q=http')
         }
 
-        fs.writeFile('tmp.html',str,(err)=>{
+        fs.writeFile(this.tick+'.html',str,(err)=>{
             if(err){console.log(err.message)}
         })
         

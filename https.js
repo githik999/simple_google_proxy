@@ -7,6 +7,8 @@ const google = require('./script/google')
 var https_key = 'private.key'
 var https_cert = 'certificate.crt'
 
+var tick = 0
+
 if(os.platform() == 'win32')
 {
     https_key = '127.0.0.1.key'
@@ -21,5 +23,6 @@ const options = {
 wall.init()
 
 https.createServer(options,(req,res)=>{
-    new google(req.url,req.headers.referer,res)
+    ++tick
+    new google(req.url,req.headers.referer,res,tick)
 }).listen(443)
