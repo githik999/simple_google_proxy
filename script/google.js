@@ -173,15 +173,12 @@ class google
     send_html(str)
     {
         this.stream.setHeader('Content-Type', 'text/html; charset=utf-8')
-        if(this.client_req_url.startsWith('/search'))
-        {
-            str = str.replace(/href="http/g, 'href="/url?q=http')
-        }
-        else if(this.client_req_url.startsWith('/url'))
+        str = str.replace(/href="http/g, 'href="/url?q=http')
+        if(this.client_req_url.startsWith('/url'))
         {
             let site = xurl.get_website_index(this.actual_target)
             let url = '/url?q='+site+'/'
-            str = str.replace(/href="\//g,'href="'+url).replace(/href='\//g,'href="'+url).replace(/<img src="\//g,'<img src="'+url)
+            replace(/href="\//g,'href="'+url).replace(/href='\//g,'href="'+url).replace(/<img src="\//g,'<img src="'+url)
             if(this.open_new_tab)
             {
                 let script = '<script>window.open("'+this.actual_target+'")</script>'
