@@ -85,9 +85,7 @@ const wall =
         {
             ret_content += str+'\n'
         }
-        fs.writeFile('res/black.root',ret_content,(err)=>{
-            console.log(err)
-        })
+        fs.writeFile('res/black.root',ret_content,(err)=>{})
     },
 
     init_root()
@@ -196,10 +194,6 @@ const wall =
             vec.pop()
         }
         let ret = vec.pop()
-        if(ret.length ==3)
-        {
-            console.log(domain,ret)
-        }
         return ret
     },
 
