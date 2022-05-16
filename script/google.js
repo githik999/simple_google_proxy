@@ -178,7 +178,7 @@ class google
         {
             let site = xurl.get_website_index(this.actual_target)
             let url = '/url?q='+site+'/'
-            replace(/href="\//g,'href="'+url).replace(/href='\//g,'href="'+url).replace(/<img src="\//g,'<img src="'+url)
+            str = str.replace(/href="\//g,'href="'+url).replace(/href='\//g,'href="'+url).replace(/<img src="\//g,'<img src="'+url)
             if(this.open_new_tab)
             {
                 let script = '<script>window.open("'+this.actual_target+'")</script>'
