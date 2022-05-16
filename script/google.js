@@ -5,6 +5,7 @@ const http = require('http')
 const https = require('https')
 const wall = require('./wall')
 const xurl = require('./xurl')
+const DOMAIN = require('./domain_block_status')
 
 class google
 {
@@ -57,17 +58,20 @@ class google
     judge(url)
     {
         let obj = new URL(url)
-        let status = wall.check_host_name(obj.hostname)
-        if(status == 0)
+        let status = wall.check_domain(obj.hostname)
+        if(status == DOMAIN.BLOCK)
         {
+            console.log(obj.hostname,'is block')
             this.proxy(url)
         }
-        else if(status == 1)
+        else if(status == DOMAIN.UNBLOCK)
         {
+            console.log(obj.hostname,'not block')
             this.no_proxy(url)
         }
-        else
+        else if(status == DOMAIN.UNKNOWN)
         {
+            console.log(obj.hostname,'unknown')
             dns.lookup(obj.hostname,(err,ip,family)=>{
                 let inside = wall.check(ip)
                 console.log(obj.hostname,ip,inside)
@@ -81,6 +85,10 @@ class google
                     this.proxy(url)
                 }
             })
+        }
+        else
+        {
+            throw('check domain error')
         }
         
     }
@@ -103,7 +111,8 @@ class google
         console.log('crawl',url)
         if(url.startsWith('https://'))
         {
-            spider = https.request(url)
+            let options = {rejectUnauthorized:false}
+            spider = https.request(url,options)
         }
         else if(url.startsWith('http://'))
         {

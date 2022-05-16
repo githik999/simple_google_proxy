@@ -1,9 +1,10 @@
 const fs = require('fs')
 const iptn = require('./ipv4_to_number')
+const DOMAIN = require('./domain_block_status')
 
 const wall = 
 {
-    root_types : ['black','white'],
+    root_types : ['white','black'],
     init()
     {
         fs.readFile('res/white.ip', (err, data) => {
@@ -96,32 +97,27 @@ const wall =
             let name = this.root_types[key]
             let file_path = 'res/' + name + '.root'
             fs.readFile(file_path, (err, content) => {
-                if(!err)
+                if(err) throw err
+                let vec = content.toString().split('\n')
+                for (const v of vec)
                 {
-                    let vec = content.toString().split('\n')
-                    for (const v of vec)
-                    {
-                        this.root[key][v.trim()] = true
-                    }
-                }else{
-                    console.log(err.message)
+                    this.root[key][v.trim()] = true
                 }
             })
         }
     },
 
-    root_type(domain)
+    get_root_type(domain)
     {
-        let root = this.domain_root(domain)
-        if(wall.black_root[root])
+        let v = this.domain_root(domain)
+        for (const key in this.root) 
         {
-            return 0
+           if(this.root[key][v])
+           {
+               return key
+           }
         }
-        if(wall.white_root[root])
-        {
-            return 1
-        }
-        return -1
+        return DOMAIN.UNBLOCK
     },
 
     add_white_root(domain)
@@ -142,20 +138,10 @@ const wall =
     {
         if(domain.endsWith('.cn') || domain.endsWith('.cn.com'))
         {
-            return 1
+            return DOMAIN.UNBLOCK
         }
         
-        if(this.is_white_root[domain])
-        {
-            return 1
-        }
-
-        if(this.in_gfw_list(domain))
-        {
-            return 0
-        }
-
-        return -1
+        return this.get_root_type(domain)
     },
 
     check(ip)
