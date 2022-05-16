@@ -76,13 +76,13 @@ class google
                 let ip_status = wall.check_ip(ip)
                 if(ip_status == DOMAIN.UNBLOCK)
                 {
-                    console.log(ip,'not block')
+                    console.log(ip,'inside')
                     this.no_proxy(url)
                     wall.add_white_root(obj.hostname)
                 }
                 else
                 {
-                    console.log(ip,'unknown')
+                    console.log(ip,'outside')
                     this.proxy(url,ip_status)
                 }
             })
