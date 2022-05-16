@@ -173,7 +173,6 @@ class google
     send_html(str)
     {
         this.stream.setHeader('Content-Type', 'text/html; charset=utf-8')
-        str = str.replace(/href="http/g, 'href="/url?q=http')
         if(this.client_req_url.startsWith('/url'))
         {
             let site = xurl.get_website_index(this.actual_target)
@@ -184,10 +183,12 @@ class google
                 let script = '<script>window.open("'+this.actual_target+'")</script>'
                 str = str.replace('</body>',script+'</body>')
             }
-            fs.writeFile('tmp.html',str,(err)=>{
-                if(err){console.log(err.message)}
-            })
         }
+        str = str.replace(/href="http/g, 'href="/url?q=http')
+
+        fs.writeFile('tmp.html',str,(err)=>{
+            if(err){console.log(err.message)}
+        })
         
         this.stream.end(str)
     }
