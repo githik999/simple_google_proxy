@@ -15,6 +15,7 @@ class google
         this.referer = referer
         this.client_req_url = client_req_url
         this.open_new_tab = false
+        console.log(this.client_req_url,this.referer)
         this.run()
     }
 
