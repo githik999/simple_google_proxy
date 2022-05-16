@@ -11,7 +11,7 @@ const wall =
             this.init_white_ip(data)
         })
 
-        this.init_gfw_list()
+        this.init_top_domain()
         this.init_root()
     },
 
@@ -38,25 +38,55 @@ const wall =
         }
     },
 
+    init_top_domain()
+    {
+        this.top_domain = []
+        fs.readFile('res/top.domain', (err, data) => {
+            if (err) throw err
+            let vec = data.toString().split('\n')
+            for (const v of vec) 
+            {
+                if(v.includes('.'))
+                {
+                    this.top_domain.push(v.trim())
+                }
+            }
+            this.init_gfw_list()
+        })
+    },
+
     init_gfw_list()
     {
+        let obj = {}
         fs.readFile('res/g.f.w.list', (err, data) => {
             if (err) throw err
             const content = Buffer.from(data.toString(), 'base64').toString()
             let vec = content.split('\n')
             for (const v of vec) 
             {
-                if(v.length < 40 && v.includes('.') && !v.endsWith('/') && !v.startsWith('@@||'))
+                if(v.length < 40 && v.includes('.') && !v.startsWith('@@||') && !v.endsWith('.'))
                 {
-                    //let info = v.split('.')
-                    let root = this.domain_root(v)
-                    if(root.length <3)
+                    let domain = this.get_host(v)
+                    if(!domain.endsWith('.tw') && !domain.endsWith('.hk') && !domain.endsWith('.cn'))
                     {
-                        console.log(v,root)
+                        let root = this.domain_root(domain)
+                        obj[root] = true
                     }
-                    
                 }
             }
+            this.write_to_black_root(obj)
+        })
+    },
+
+    write_to_black_root(obj)
+    {
+        let ret_content = ''
+        for (const str in obj) 
+        {
+            ret_content += str+'\n'
+        }
+        fs.writeFile('res/black.root',ret_content,(err)=>{
+            console.log(err)
         })
     },
 
@@ -112,12 +142,7 @@ const wall =
 
     check_domain(domain)
     {
-        if(this.in_gfw_list(domain))
-        {
-            return 0
-        }
-        
-        if(domain.endsWith('.cn'))
+        if(domain.endsWith('.cn') || domain.endsWith('.cn.com'))
         {
             return 1
         }
@@ -127,9 +152,14 @@ const wall =
             return 1
         }
 
+        if(this.in_gfw_list(domain))
+        {
+            return 0
+        }
+
         return -1
     },
-    
+
     check(ip)
     {
         let num = iptn.ip_to_number(ip)
@@ -157,30 +187,47 @@ const wall =
         return Math.floor(num/1000000)
     },
 
-    domain_root(str)
+    domain_root(domain)
     {
-        if(str.includes('://') && !str.startsWith('http'))
-        {
-            return
-        }
-        let domain = str.replace('http://','').replace('https://','').split('/')[0]
-        console.log(domain)
-        /*let pop_time = this.get_pop_time(domain)
+        let pop_time = this.get_pop_time(domain)
         let vec = domain.split('.')
         for (let i = 0; i < pop_time; i++) 
         {
             vec.pop()
         }
-        let ret = vec.pop().replace(/\|/g,'').replace(/!/g,'').replace('--','').replace(/@/g,'')
-        return ret*/
+        let ret = vec.pop()
+        if(ret.length ==3)
+        {
+            console.log(domain,ret)
+        }
+        return ret
     },
 
-    
+    get_host(str)
+    {
+        let url = str.replace(/@/g,'').replace(/!/g,'').replace('--','').replace(/\|/g,'')
+        let pos = url.indexOf('://')
+        if(pos >= 0)
+        {
+            url = url.slice(pos+3)
+        }
+        pos = url.indexOf('/')
+        if(pos > 0)
+        {
+            url = url.slice(0,pos)
+        }
+        
+        if(url.startsWith('-'))
+        {
+            url = url.slice(1)
+        }
+        
+        return url
+    },
 
     get_pop_time(domain)
     {
-        let special = ['.com.cn','.cz.cc','.eu.org','.com.tw','.co.id','.co.ma','.co.kr','.co.il','.co.uk','.cn.com','.co.jp','.co.tv','.or.jp','.or.kr','.or.id','.ne.jp','.go.jp','.co.nz']
-        for (const v of special) 
+        for (const v of this.top_domain) 
         {
             if(domain.trim().endsWith(v))
             {
