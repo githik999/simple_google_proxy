@@ -117,13 +117,13 @@ const wall =
                return key
            }
         }
-        return DOMAIN.UNBLOCK
+        return DOMAIN.UNKNOWN
     },
 
     add_white_root(domain)
     {
         let root = this.domain_root(domain)
-        fs.appendFile(white_root_file,root,(err)=>{
+        fs.appendFile('res/white.root',root,(err)=>{
             if(err) throw err
         })
     },
@@ -144,13 +144,17 @@ const wall =
         return this.get_root_type(domain)
     },
 
-    check(ip)
+    check_ip(ip)
     {
         let num = iptn.ip_to_number(ip)
-        return wall.check_num(num)
+        if(wall.is_white_ip(num))
+        {
+            return DOMAIN.UNBLOCK
+        }
+        return DOMAIN.UNKNOWN
     },
 
-    check_num(num)
+    is_white_ip(num)
     {
         let k = wall.get_key(num)
         let data = wall.white_ips[k]

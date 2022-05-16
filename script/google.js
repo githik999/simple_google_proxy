@@ -58,31 +58,32 @@ class google
     judge(url)
     {
         let obj = new URL(url)
-        let status = wall.check_domain(obj.hostname)
-        if(status == DOMAIN.BLOCK)
+        let domain_status = wall.check_domain(obj.hostname)
+        if(domain_status == DOMAIN.BLOCK)
         {
             console.log(obj.hostname,'is block')
-            this.proxy(url)
+            this.proxy(url,domain_status)
         }
-        else if(status == DOMAIN.UNBLOCK)
+        else if(domain_status == DOMAIN.UNBLOCK)
         {
             console.log(obj.hostname,'not block')
             this.no_proxy(url)
         }
-        else if(status == DOMAIN.UNKNOWN)
+        else if(domain_status == DOMAIN.UNKNOWN)
         {
             console.log(obj.hostname,'unknown')
             dns.lookup(obj.hostname,(err,ip,family)=>{
-                let inside = wall.check(ip)
-                console.log(obj.hostname,ip,inside)
-                if(inside)
+                let ip_status = wall.check_ip(ip)
+                if(ip_status == DOMAIN.UNBLOCK)
                 {
+                    console.log(ip,'not block')
                     this.no_proxy(url)
-                    wall.add_site(obj.hostname)
+                    wall.add_white_root(obj.hostname)
                 }
                 else
                 {
-                    this.proxy(url)
+                    console.log(ip,'unknown')
+                    this.proxy(url,ip_status)
                 }
             })
         }
@@ -158,9 +159,12 @@ class google
         })
     }
 
-    proxy(url)
+    proxy(url,status)
     {
-        this.open_new_tab = url
+        if(status == DOMAIN.UNKNOWN)
+        {
+            this.open_new_tab = url
+        }
         this.crawl(url)
     }
 
