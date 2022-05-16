@@ -142,11 +142,14 @@ class google
                 if(this.client_req_url.startsWith('/url'))
                 {
                     stream.setHeader('Content-Type', 'text/html; charset=utf-8')
+                    let site = xurl.get_website_index(this.actual_target)
+                    let url = '/url?q='+site+'/'
+                    ret = ret.toString().replace(/href="\//g,'href="'+url)
+                                        .replace(/href='\//g,'href="'+url)
+                                        .replace(/<img src="\//g,'<img src="'+url)
                     if(this.open_new_tab)
                     {
-                        let website = xurl.get_website_index(this.open_new_tab)+'/'
-                        let script = '<script>window.open("'+this.open_new_tab+'")</script>'
-                        ret = ret.toString().replace(/href="\//g,'href="'+website).replace(/href='\//g,'href="'+website)
+                        let script = '<script>window.open("'+this.actual_target+'")</script>'
                         ret = ret.replace('</body>',script+'</body>')
                     }
                 }
@@ -168,7 +171,8 @@ class google
     {
         if(status == DOMAIN.UNKNOWN)
         {
-            this.open_new_tab = url
+            this.open_new_tab = true
+            this.actual_target = url
         }
         this.crawl(url)
     }
