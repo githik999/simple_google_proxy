@@ -128,6 +128,7 @@ class google
 
         spider.on('response',(res)=>{
             let ext = res.headers['content-type']
+            console.log(res.statusCode,res.statusMessage,ext)
             let all_chunk = []
             res.on('data',(chunk)=>{
                 all_chunk.push(chunk)
