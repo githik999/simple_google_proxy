@@ -4,20 +4,16 @@ const https = require('https')
 const wall = require('./script/wall')
 const google = require('./script/google')
 
-var https_key = 'private.key'
-var https_cert = 'certificate.crt'
-
-var tick = 0
+let ca = 'lookssl'
 
 if(os.platform() == 'win32')
 {
-    https_key = '127.0.0.1.key'
-    https_cert = '127.0.0.1.cert'
+    ca = 'localhost'
 }
 
 const options = {
-    key: fs.readFileSync('res/'+https_key),
-    cert: fs.readFileSync('res/'+https_cert)
+    key: fs.readFileSync('res/'+ca+'.key'),
+    cert: fs.readFileSync('res/'+ca+'.crt')
 }
 
 wall.init()
