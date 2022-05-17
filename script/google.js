@@ -9,14 +9,12 @@ const DOMAIN = require('./domain_block_status')
 
 class google
 {
-    constructor(client_req_url, referer , stream, tick)
+    constructor(client_req_url, referer , stream)
     {
-        this.tick = tick
         this.stream = stream
         this.referer = referer
         this.client_req_url = client_req_url
         this.open_new_tab = false
-        console.log(tick,this.client_req_url,this.referer)
         this.run()
     }
 
@@ -115,7 +113,6 @@ class google
     crawl(url)
     {
         let spider
-        console.log('crawl',url)
         if(url.startsWith('https://'))
         {
             let options = {rejectUnauthorized:false}
@@ -191,10 +188,6 @@ class google
         {
             str = str.replace(/href="http/g, 'href="/url?q=http')
         }
-
-        fs.writeFile(this.tick+'.html',str,(err)=>{
-            if(err){console.log(err.message)}
-        })
         
         this.stream.end(str)
     }

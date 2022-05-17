@@ -19,6 +19,5 @@ const options = {
 wall.init()
 
 https.createServer(options,(req,res)=>{
-    ++tick
-    new google(req.url,req.headers.referer,res,tick)
+    new google(req.url,req.headers.referer,res)
 }).listen(443)
